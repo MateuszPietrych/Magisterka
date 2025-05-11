@@ -1,0 +1,51 @@
+from keybert import KeyBERT
+from chromadb.config import Settings
+import chromadb
+import os
+from yake import KeywordExtractor
+
+
+# Initialize the KeyBERT model
+model = KeyBERT('distilbert-base-nli-mean-tokens')
+kw_extractor = KeywordExtractor(top=5, stopwords=None, n=3, dedupLim=0.9, features=None)
+
+
+# Example text
+text = """
+   Geralt choice: Caranthir - tell me about him.   
+   Geralt: Tell me something more about Caranthir. Know him well?
+   Avallach: Know him? I reared him.
+   Geralt: Raised, don't you mean?
+   Avallach: No, Geralt. I began shaping him long before he was born.
+   Avallach: For centuries I… brought together pairs of elves manifesting certain abilities - those able to manipulate time and space. He is the result of these efforts. Caranthir, a golden child.
+   Avallach: Golden child who grew up to be a criminal.
+   Geralt choice: Why're you helping Ciri?
+   Geralt: You imprisoned Ciri the first time you met her. Now you protect her while fighting against your own kind. Quite an about-face.
+   Avallach: First of all, I did not imprison her. She found me. It was her destiny.
+   Geralt: Yeah, sure. Get to the "second of all." Why're you helping her?
+   Avallach: Because she is a danger. A mortal one.
+   Avallach: You look at her and see a human, a ward, a daughter, even. I look and see the Elder Blood - a power that can destroy the world, a power that must be kept from Eredin's power-addled hands at all costs.
+   Avallach: Admittedly, our motives differ. Yet in spite of that we share a goal. So you would be wise to trust me… or at least try.
+"""
+# Extract keywords
+# keywords = model.extract_keywords(text)
+keywords = kw_extractor.extract_keywords(text)
+
+
+# Print the keywords
+print("Keywords:")
+for keyword in keywords:
+    print("Keyword:", keyword[0], "Score:", keyword[1])
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+chroma_client = chromadb.PersistentClient(path=script_dir)
+collection = chroma_client.get_or_create_collection(name="witcher")
+
+for keyword in keywords:
+    # Add the keyword to the ChromaDB collection
+    results = collection.query(
+        query_texts=keyword[0], # Chroma will embed this for you
+        n_results=1 # how many results to return
+    )
+    print(f"Keyword: {keyword}, Results: {results}\n")
+

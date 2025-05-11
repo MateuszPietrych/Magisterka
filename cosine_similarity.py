@@ -11,10 +11,6 @@ import pandas as pd
 
 
 
-
-
-
-
 # Load the Excel file
 excel_path = 'witcher_info.xlsx'  # Change this to your actual file path
 xls = pd.ExcelFile(excel_path)

@@ -66,12 +66,13 @@ def split_and_save(input_path, output_folder):
 
     for sectionId in dict.keys():
         try:
+            print(f"{sectionId} added to collection")
             collection.add(
-                documents=list(dict[sectionId]),
-                ids=list(sectionId),
+                documents=dict[sectionId],
+                ids=sectionId,
                 )
         except Exception as e:
-            print(f"Error adding to collection {sectionId}: {e}. Section: {dict[sectionId]}")
+            print(f"Error adding to collection {sectionId}: {e}.")
             continue    
         
 
@@ -122,12 +123,12 @@ MIN_LENGTH_OF_LINE_IN_SECTION = 22
 split_and_save(input_path, output_folder)
 
 
+
 # x = "--------------------------------------------------------------------------------\n" \
 # "Buy: 10\n" \
 # "adsd: 5\n" \
 # "asd ad is fasd sdh ashd hasdj jjwjh \n" \
 # "--------------------------------------------------------------------------------\n" \
-
 
 # cleaned_x = clean_section(x)
 # print(cleaned_x)
